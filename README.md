@@ -1,3 +1,9 @@
+# Warning: reference repository
+
+We suggest you deploy Sourcegraph using [Amazon EKS and Helm](https://docs.sourcegraph.com/admin/deploy/kubernetes/helm) or [Docker Compose](https://docs.sourcegraph.com/admin/deploy/docker-compose) as these are the most well-supported deployment methods.
+
+This repository is a work-in-progress, and intended to be a reference for deploying Sourcegraph on the ECS container platform.
+
 # Deploy Sourcegraph using Amazon ECS
 
 This deploys Sourcegraph on [Amazon ECS (using EC2 launch types)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/application_architecture.html). We provide:
