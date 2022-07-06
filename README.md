@@ -24,6 +24,7 @@ The EC2 launch type / EBS volumes are highly advised for all Sourcegraph service
 * `variables.tf` Variables you can specify in `terraform.tfvars`
 * `provider.tf` Terraform boilerplate
 * `.tool-versions` ASDF tool versions (optional)
+* `svc-foobar.tf` Sourcegraph service definitions
 
 ## Installation
 
