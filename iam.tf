@@ -1,9 +1,9 @@
 # AWS IAM roles
 
-// ECS task execution role
-// Used for executing ECS tasks.
+# ECS task execution role
+# Used for executing ECS tasks.
 resource "aws_iam_role" "ecs_task_execution" {
-  name               = "${var.prefix}-ecs-task-execution"
+  name               = "${var.cluster_name}-ecs-task-execution"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution.json
 }
 data "aws_iam_policy_document" "ecs_task_execution" {
@@ -25,10 +25,10 @@ resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attach
 }
 
 
-// EC2 Container Service agent role.
-// Used for launching EC2 instances, registering them into the ECS cluster, etc.
+# ECS/EC2 Container Service agent role.
+# Used for launching EC2 instances, registering them into the ECS cluster, etc.
 resource "aws_iam_role" "ecs_agent" {
-  name               = "${var.prefix}-ecs-agent"
+  name               = "${var.cluster_name}-ecs-agent"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
 }
 data "aws_iam_policy_document" "ecs_agent" {
@@ -44,4 +44,8 @@ data "aws_iam_policy_document" "ecs_agent" {
 resource "aws_iam_role_policy_attachment" "ecs_agent" {
   role       = aws_iam_role.ecs_agent.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+resource "aws_iam_instance_profile" "ecs_agent" {
+  name = "${var.cluster_name}-ecs-agent"
+  role = aws_iam_role.ecs_agent.name
 }
