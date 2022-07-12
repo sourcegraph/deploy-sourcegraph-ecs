@@ -52,7 +52,6 @@ resource "aws_autoscaling_group" "autoscaling_group" {
   default_cooldown      = 120 # Time in seconds after a scaling activity completes before another scaling activity can start.
   max_size              = var.autoscaling_max_instances
   min_size              = var.autoscaling_min_instances
-  desired_capacity      = var.autoscaling_desired_instances
   protect_from_scale_in = true
 
   launch_configuration = aws_launch_configuration.launch_configuration.name

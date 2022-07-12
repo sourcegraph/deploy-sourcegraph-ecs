@@ -40,11 +40,6 @@ variable "autoscaling_min_instances" {
   type        = number
   default     = 1
 }
-variable "autoscaling_desired_instances" {
-  description = "value"
-  type        = number
-  default     = 1
-}
 
 # Optional configuration
 variable "ssh_port" {
