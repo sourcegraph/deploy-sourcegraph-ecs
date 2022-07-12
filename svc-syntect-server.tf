@@ -30,24 +30,14 @@ resource "aws_ecs_task_definition" "syntax_highlighter" {
     }
   ])
 
-  # TODO: eliminate volume
-  volume {
-    name      = "service-storage"
-    host_path = "/ecs/service-storage"
-  }
-
   # TODO: add NLB
-  placement_constraints {
-    type       = "memberOf"
-    expression = "attribute:ecs.availability-zone in [us-east-1a, us-east-1b]"
-  }
 }
 
 resource "aws_ecs_service" "syntax_highlighter" {
   name            = "syntax-highlighter"
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.syntax_highlighter.arn
-  desired_count   = 1
+  desired_count   = 2
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.capacity_provider.name
