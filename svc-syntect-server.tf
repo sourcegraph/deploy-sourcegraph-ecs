@@ -20,6 +20,13 @@ resource "aws_ecs_task_definition" "syntax_highlighter" {
           containerPort = 6060
         }
       ]
+      healthCheck = {
+        retries     = 3,
+        command     = ["CMD-SHELL", "wget -q 'http://127.0.0.1:9238/health' -O /dev/null || exit 1"]
+        timeout     = 5
+        interval    = 5
+        startPeriod = 5
+      }
     }
   ])
 
@@ -40,7 +47,7 @@ resource "aws_ecs_service" "syntax_highlighter" {
   name            = "syntax-highlighter"
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.syntax_highlighter.arn
-  desired_count   = 2
+  desired_count   = 1
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.capacity_provider.name
