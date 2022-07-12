@@ -5,7 +5,7 @@ resource "aws_ecs_task_definition" "syntax_highlighter" {
       requiresCompatibilities = "EC2"
       name                    = "syntax-highlighter"
       image                   = "index.docker.io/sourcegraph/syntax-highlighter:3.41.0@sha256:c39677af141613aecd733663b60585e85a17e3f8a44e02bd864e6a6954e7aba1"
-      cpu                     = 4000 # 4 CPUs
+      cpu                     = 4096 # 4 CPUs
       memory                  = 6144 # 6 GiB
       essential               = true
       portMappings = [
