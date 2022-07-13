@@ -1,6 +1,6 @@
 # Launch configuration for our EC2 instances in our ECS cluster.
 resource "aws_launch_configuration" "launch_configuration" {
-  name_prefix   = "${var.cluster_name}-ecs-clustera"
+  name_prefix   = "${var.cluster_name}-ecs-cluster"
   image_id      = data.aws_ami.aws_optimized_ecs.id
   instance_type = var.instance_type
 
