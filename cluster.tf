@@ -100,13 +100,21 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = "${var.cluster_name}-cluster"
 }
 resource "aws_ecs_cluster_capacity_providers" "capacity_providers" {
-  cluster_name       = aws_ecs_cluster.ecs_cluster.name
-  capacity_providers = [aws_ecs_capacity_provider.capacity_provider.name]
+  cluster_name = aws_ecs_cluster.ecs_cluster.name
+  capacity_providers = flatten([
+    [aws_ecs_capacity_provider.capacity_provider.name],
+    [for provider in aws_ecs_capacity_provider.indexed_search : provider.name],
+  ])
 
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.capacity_provider.name
     weight            = "1"
   }
+}
+
+resource "aws_cloudwatch_log_group" "primary" {
+  name              = var.cluster_name
+  retention_in_days = 90
 }
 
 data "aws_caller_identity" "current" {}

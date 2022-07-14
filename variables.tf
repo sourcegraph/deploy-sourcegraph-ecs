@@ -40,6 +40,17 @@ variable "autoscaling_min_instances" {
   type        = number
   default     = 1
 }
+variable "indexed_search_instance_type" {
+  description = "EC2 instance type to use for running indexed-search ECS containers. e.g. m5a.2xlarge"
+  type        = string
+  default     = "m5a.2xlarge"
+}
+variable "indexed_search_instances" {
+  description = "value"
+  type        = number
+  default     = 3
+}
+
 
 # Optional configuration
 variable "ssh_port" {
