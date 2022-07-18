@@ -23,7 +23,7 @@ resource "aws_launch_configuration" "indexed_search" {
   enable_monitoring    = true
   ebs_block_device {
     device_name           = "/dev/sda1"
-    volume_size           = 100
+    volume_size           = 200
     volume_type           = "gp2"
     delete_on_termination = false
     encrypted             = false
@@ -116,6 +116,7 @@ resource "aws_ecs_task_definition" "indexed_search" {
       essential = true
       portMappings = [
         {
+          # only exposed to other Sourcegraph services
           hostPort      = 6072,
           protocol      = "tcp",
           containerPort = 6072
@@ -137,7 +138,15 @@ resource "aws_ecs_task_definition" "indexed_search" {
           sourceVolume  = "data"
         }
       ]
-      # TODO: environment variables!
+      environment = [
+        { name = "SRC_FRONTEND_INTERNAL", value = "sourcegraph-frontend-internal:3090" }, # TODO: this value is wrong
+        { name = "JAEGER_AGENT_HOST", value = "localhost" },                              # TODO: this value is wrong
+        # Tell this container the hostname of it's service (container pair). For example,
+        # indexed-search-1 should would be a single indexed-search service, comprised of both a
+        # single search-indexer and indexed-searcher containers. The hostname should be identical
+        # for both, used for sharding / automatic rebalancing.
+        { name = "HOSTNAME", value = "indexed-search-${each.key}" }
+      ]
     },
     {
       requiresCompatibilities = "EC2"
@@ -148,6 +157,7 @@ resource "aws_ecs_task_definition" "indexed_search" {
       essential               = true
       portMappings = [
         {
+          # only exposed to other Sourcegraph services
           hostPort      = 6070,
           protocol      = "tcp",
           containerPort = 6070
@@ -176,7 +186,14 @@ resource "aws_ecs_task_definition" "indexed_search" {
         interval    = 30
         startPeriod = null
       }
-      # TODO: environment variables!
+      environment = [
+        { name = "JAEGER_AGENT_HOST", value = "localhost" }, # TODO: this value is wrong
+        # Tell this container the hostname of it's service (container pair). For example,
+        # indexed-search-1 should would be a single indexed-search service, comprised of both a
+        # single search-indexer and indexed-searcher containers. The hostname should be identical
+        # for both, used for sharding / automatic rebalancing.
+        { name = "HOSTNAME", value = "indexed-search-${each.key}" }
+      ]
     }
   ])
 
