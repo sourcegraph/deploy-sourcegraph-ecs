@@ -11,92 +11,38 @@
 #    to that indexed-search replica only, and the EBS volume for that EC2 instance is "pinned" and
 #    the data will be persisted there.
 
-resource "aws_launch_configuration" "indexed_search" {
+module "indexed_search_cluster_nodes" {
   for_each = { for i in range(var.indexed_search_instances) : "${i}" => i }
 
-  name_prefix          = "${var.cluster_name}-indexed-search-${each.key}"
-  image_id             = data.aws_ami.aws_optimized_ecs.id
-  instance_type        = var.indexed_search_instance_type
-  iam_instance_profile = aws_iam_instance_profile.ecs_agent.arn
-  security_groups      = [module.ec2_security_group.security_group_id]
-  ebs_optimized        = true
-  enable_monitoring    = true
-  ebs_block_device {
+  source        = "./modules/cluster_nodes"
+  replica       = each.key
+  cluster_name  = var.cluster_name
+  name          = "indexed-search"
+  instance_type = var.indexed_search_instance_type
+  ebs_block_device = {
     device_name           = "/dev/sda1"
-    volume_size           = 200
+    volume_size           = 200 # TODO: make this a var
     volume_type           = "gp2"
     delete_on_termination = false
-    encrypted             = false
+    encrypted             = true
   }
-  lifecycle {
-    create_before_destroy = true
-  }
+  autoscaling_min_instances = 1
+  autoscaling_max_instances = 1
+
+  iam_instance_profile = aws_iam_instance_profile.ecs_agent.arn
+  security_groups      = [module.ec2_security_group.security_group_id]
+  vpc_zone_identifier  = module.ecs_vpc.public_subnets # TODO: consult on validity of chosen subnets
+
   user_data = <<EOF
-#!/bin/bash
-echo ECS_CLUSTER=${var.cluster_name}-cluster >> /etc/ecs/ecs.config
-echo ECS_INSTANCE_ATTRIBUTES='${jsonencode({ "com.sourcegraph.service" = "indexed-search-${each.key}" })}' >> /etc/ecs/ecs.config
+  #!/bin/bash
+  echo ECS_CLUSTER=${aws_ecs_cluster.ecs_cluster.name} >> /etc/ecs/ecs.config
+  echo ECS_INSTANCE_ATTRIBUTES='${jsonencode({ "com.sourcegraph.service" = "indexed-search-${each.key}" })}' >> /etc/ecs/ecs.config
 
-sudo mkdir /data -p
-sudo echo '/dev/sda1 /data xfs defaults 0 0' >> /etc/fstab
-sudo mount -a
-sudo chown 100:100 /data && sudo chmod 777 /data
-EOF
-}
-
-# Auto-scaling group used to create a single EC2 instance for each indexed-search-N replica in our
-# ECS cluster. An ASG is used to ensure that e.g. if the EC2 instance goes down, the ASG will create
-# a new one. It always has size 1.
-resource "aws_autoscaling_group" "indexed_search" {
-  for_each = { for i in range(var.indexed_search_instances) : "${i}" => i }
-
-  name_prefix = "${var.cluster_name}-indexed-search-${each.key}"
-  termination_policies = [
-    "AllocationStrategy",
-    "OldestInstance"
-  ]
-  max_size              = 1
-  min_size              = 1
-  protect_from_scale_in = true
-
-  launch_configuration = aws_launch_configuration.indexed_search[each.key].name
-
-  lifecycle {
-    create_before_destroy = true
-  }
-  # TODO: consult with team about subnets / vpcs
-  vpc_zone_identifier = module.ecs_vpc.public_subnets
-
-  # TODO: standardized tags
-  tags = [
-    {
-      key                 = "AmazonECSManaged"
-      value               = true
-      propagate_at_launch = true
-    },
-    {
-      key                 = "Name"
-      value               = var.cluster_name,
-      propagate_at_launch = true
-    }
-  ]
-}
-
-# ECS capacity provider (causes autoscaling group instances to register with our ECS cluster)
-resource "aws_ecs_capacity_provider" "indexed_search" {
-  for_each = { for i in range(var.indexed_search_instances) : "${i}" => i }
-
-  name = "${var.cluster_name}-indexed-search-${each.key}"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.indexed_search[each.key].arn
-    managed_termination_protection = "ENABLED"
-
-    managed_scaling {
-      maximum_scaling_step_size = 1000
-      minimum_scaling_step_size = 1
-      status                    = "ENABLED"
-      target_capacity           = 100
-    }
-  }
+  sudo mkdir /data -p
+  sudo echo '/dev/sda1 /data xfs defaults 0 0' >> /etc/fstab
+  sudo mount -a
+  sudo chown 100:100 /data && sudo chmod 777 /data
+  EOF
 }
 
 resource "aws_ecs_task_definition" "indexed_search" {
@@ -111,7 +57,7 @@ resource "aws_ecs_task_definition" "indexed_search" {
 
       # zoekt-indexserver is CPU bound. The more CPU you allocate to it, the
       # lower lag between a new commit and it being indexed for search.
-      cpu       = 8192 # 8 CPUs
+      cpu       = 6144 # 6 CPUs
       memory    = 8192 # 8 GiB
       essential = true
       portMappings = [
@@ -218,7 +164,7 @@ resource "aws_ecs_service" "indexed_search" {
   desired_count   = 1
 
   capacity_provider_strategy {
-    capacity_provider = aws_ecs_capacity_provider.indexed_search[each.key].name
+    capacity_provider = module.indexed_search_cluster_nodes[each.key].capacity_provider_name
     weight            = 1
   }
 }

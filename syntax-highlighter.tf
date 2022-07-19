@@ -51,7 +51,7 @@ resource "aws_ecs_service" "syntax_highlighter" {
   desired_count   = 2
 
   capacity_provider_strategy {
-    capacity_provider = aws_ecs_capacity_provider.capacity_provider.name
+    capacity_provider = module.general_cluster_nodes.capacity_provider_name
     weight            = 1
   }
 }
