@@ -53,10 +53,38 @@ module "ec2_security_group" {
   # TODO: restrict this / document how to at least
   egress_with_cidr_blocks = [
     {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = "0.0.0.0/0"
+      ipv6_cidr_blocks = "::/0"
+    }
+  ]
+}
+
+module "allow_all" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.9"
+
+  name   = "${var.cluster_name}-allow-all"
+  vpc_id = module.ecs_vpc.vpc_id
+
+  ingress_with_cidr_blocks = [
+    {
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = "0.0.0.0/0"
+      ipv6_cidr_blocks = "::/0"
+    }
+  ]
+  egress_with_cidr_blocks = [
+    {
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = "0.0.0.0/0"
+      ipv6_cidr_blocks = "::/0"
     }
   ]
 }
