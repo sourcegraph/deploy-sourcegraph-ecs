@@ -63,11 +63,21 @@ resource "aws_ecs_task_definition" "frontend" {
         command     = ["CMD-SHELL", "wget -q 'http://127.0.0.1:3080/healthz' -O /dev/null || exit 1"]
         timeout     = 10
         interval    = 5
-        startPeriod = 5
+        startPeriod = 300
       }
+      mountPoints = [
+        {
+          readOnly      = null,
+          containerPath = "/mnt/cache"
+          sourceVolume  = "cache"
+        }
+      ]
     }
   ])
   network_mode = "awsvpc"
+  volume {
+    name = "cache"
+  }
 }
 
 resource "aws_ecs_service" "frontend" {
