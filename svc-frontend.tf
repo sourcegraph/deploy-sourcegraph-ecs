@@ -32,6 +32,9 @@ resource "aws_ecs_task_definition" "frontend" {
       ]
       environment = [
         { name = "DEPLOY_TYPE", value = "pure-docker" },
+        { name = "REDIS_CACHE_ENDPOINT", value = "${aws_elasticache_cluster.redis_cache.cache_nodes[0].address}:${aws_elasticache_cluster.redis_cache.cache_nodes[0].port}" },
+        { name = "REDIS_STORE_ENDPOINT", value = "${aws_elasticache_cluster.redis_store.cache_nodes[0].address}:${aws_elasticache_cluster.redis_store.cache_nodes[0].port}" },
+
         # TODO: every vaue below here is wrong
         { name = "JAEGER_AGENT_HOST", value = "localhost" },                                                          # TODO: this value is wrong
         { name = "PGHOST", value = "pgsql" },                                                                         # TODO
