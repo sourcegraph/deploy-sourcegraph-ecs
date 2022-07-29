@@ -84,7 +84,7 @@ resource "aws_lb_target_group" "syntax_highlighter" {
 
 resource "aws_lb" "syntax_highlighter" {
   name                       = "${var.cluster_name}-syntax-highlighter"
-  internal                   = false # private subnet access only
+  internal                   = true # private subnet access only
   load_balancer_type         = "application"
   security_groups            = [module.allow_all.security_group_id]
   subnets                    = module.ecs_vpc.public_subnets
@@ -97,7 +97,7 @@ resource "aws_lb" "syntax_highlighter" {
   # }
 }
 
-resource "aws_alb_listener" "http" {
+resource "aws_alb_listener" "syntax_highlighter" {
   load_balancer_arn = aws_lb.syntax_highlighter.arn
   port              = 80
   protocol          = "HTTP"
