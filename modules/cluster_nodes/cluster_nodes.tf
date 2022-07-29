@@ -96,18 +96,16 @@ resource "aws_autoscaling_group" "this" {
   vpc_zone_identifier = var.vpc_zone_identifier
 
   # TODO: cleanup tags
-  tags = [
-    {
-      key                 = "AmazonECSManaged"
-      value               = true
-      propagate_at_launch = true
-    },
-    {
-      key                 = "Name"
-      value               = var.cluster_name,
-      propagate_at_launch = true
-    }
-  ]
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = true
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Name"
+    value               = var.cluster_name
+    propagate_at_launch = true
+  }
 }
 
 resource "aws_ecs_capacity_provider" "this" {
