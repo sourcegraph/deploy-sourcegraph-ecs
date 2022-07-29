@@ -85,8 +85,8 @@ resource "aws_ecs_task_definition" "indexed_search" {
         }
       ]
       environment = [
-        { name = "SRC_FRONTEND_INTERNAL", value = "sourcegraph-frontend-internal:3090" }, # TODO: this value is wrong
-        { name = "JAEGER_AGENT_HOST", value = "localhost" },                              # TODO: this value is wrong
+        { name = "SRC_FRONTEND_INTERNAL", value = aws_lb.frontend_internal.dns_name },
+        { name = "JAEGER_AGENT_HOST", value = "localhost" }, # TODO: this value is wrong
         # Tell this container the hostname of it's service (container pair). For example,
         # indexed-search-1 should would be a single indexed-search service, comprised of both a
         # single search-indexer and indexed-searcher containers. The hostname should be identical
