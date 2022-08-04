@@ -1,5 +1,5 @@
 resource "aws_db_instance" "pgsql" {
-  identifier_prefix               = "${var.cluster_name}-"
+  identifier_prefix               = "${var.cluster_name}-pgsql-"
   allocated_storage               = 20   # GiB
   max_allocated_storage           = 2048 # 2 TiB (incredibly unlikely we'd reach this in practice)
   allow_major_version_upgrade     = true
@@ -21,6 +21,56 @@ resource "aws_db_instance" "pgsql" {
   db_subnet_group_name      = aws_db_subnet_group.postgres.name
   vpc_security_group_ids    = [module.ec2_security_group.security_group_id]
   final_snapshot_identifier = "${var.cluster_name}-pgsql-final-snapshot"
+}
+
+resource "aws_db_instance" "codeintel" {
+  identifier_prefix               = "${var.cluster_name}-codeintel-"
+  allocated_storage               = 20   # GiB
+  max_allocated_storage           = 2048 # 2 TiB (incredibly unlikely we'd reach this in practice)
+  allow_major_version_upgrade     = true
+  auto_minor_version_upgrade      = true
+  backup_retention_period         = 15 # days
+  copy_tags_to_snapshot           = true
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  engine                          = "postgres"
+  engine_version                  = "14.2"
+  instance_class                  = var.postgres_instance_type
+  monitoring_interval             = 5
+  monitoring_role_arn             = aws_iam_role.rds_ehanced_monitoring.arn
+  db_name                         = "sourcegraph"
+  username                        = "sourcegraph"
+  # The Postgres instance is protected by network policies, not a password.
+  password                  = "sourcegraph"
+  storage_encrypted         = true
+  storage_type              = "gp2"
+  db_subnet_group_name      = aws_db_subnet_group.postgres.name
+  vpc_security_group_ids    = [module.ec2_security_group.security_group_id]
+  final_snapshot_identifier = "${var.cluster_name}-codeintel-final-snapshot"
+}
+
+resource "aws_db_instance" "codeinsights" {
+  identifier_prefix               = "${var.cluster_name}-codeinsights-"
+  allocated_storage               = 20   # GiB
+  max_allocated_storage           = 2048 # 2 TiB (incredibly unlikely we'd reach this in practice)
+  allow_major_version_upgrade     = true
+  auto_minor_version_upgrade      = true
+  backup_retention_period         = 15 # days
+  copy_tags_to_snapshot           = true
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  engine                          = "postgres"
+  engine_version                  = "14.2"
+  instance_class                  = var.postgres_instance_type
+  monitoring_interval             = 5
+  monitoring_role_arn             = aws_iam_role.rds_ehanced_monitoring.arn
+  db_name                         = "sourcegraph"
+  username                        = "sourcegraph"
+  # The Postgres instance is protected by network policies, not a password.
+  password                  = "sourcegraph"
+  storage_encrypted         = true
+  storage_type              = "gp2"
+  db_subnet_group_name      = aws_db_subnet_group.postgres.name
+  vpc_security_group_ids    = [module.ec2_security_group.security_group_id]
+  final_snapshot_identifier = "${var.cluster_name}-codeinsights-final-snapshot"
 }
 
 resource "aws_iam_role" "rds_ehanced_monitoring" {
