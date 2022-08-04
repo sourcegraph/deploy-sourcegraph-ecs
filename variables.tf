@@ -24,7 +24,7 @@ variable "availability_zones" {
   default     = ["us-east-1a", "us-east-1b"]
 }
 
-# Tuning parameters
+# Cluster tuning parameters
 variable "instance_type" {
   description = "EC2 instance type to use for running ECS containers. e.g. m5a.2xlarge"
   type        = string
@@ -59,6 +59,58 @@ variable "redis_instance_type" {
   description = "ElastiCache instance type to use for Rediss"
   type        = string
   default     = "cache.m4.large"
+}
+
+# Service tuning parameters
+variable "frontend_cpu" {
+  description = "frontend CPU allocation (1024 == one vCPU)"
+  type        = number
+  default     = 4096
+}
+variable "frontend_mem" {
+  description = "frontend memory allocation (1024 == 1 GiB)"
+  type        = number
+  default     = 8192
+}
+variable "github_proxy_cpu" {
+  description = "github-proxy CPU allocation (1024 == one vCPU)"
+  type        = number
+  default     = 1024
+}
+variable "github_proxy_mem" {
+  description = "github-proxy memory allocation (1024 == 1 GiB)"
+  type        = number
+  default     = 1024
+}
+variable "search_indexer_cpu" {
+  description = "search-indexer CPU allocation (1024 == one vCPU)"
+  type        = number
+  default     = 6144
+}
+variable "search_indexer_mem" {
+  description = "search-indexer memory allocation (1024 == 1 GiB)"
+  type        = number
+  default     = 8192
+}
+variable "indexed_searcher_cpu" {
+  description = "indexed-searcher CPU allocation (1024 == one vCPU)"
+  type        = number
+  default     = 2048
+}
+variable "indexed_searcher_mem" {
+  description = "search-indexer memory allocation (1024 == 1 GiB)"
+  type        = number
+  default     = 4092
+}
+variable "syntax_highlighter_cpu" {
+  description = "syntax-highlighter CPU allocation (1024 == one vCPU)"
+  type        = number
+  default     = 4096
+}
+variable "syntax_highlighter_mem" {
+  description = "syntax-highlighter memory allocation (1024 == 1 GiB)"
+  type        = number
+  default     = 6144
 }
 
 

@@ -5,8 +5,8 @@ resource "aws_ecs_task_definition" "github_proxy" {
       requiresCompatibilities = "EC2"
       name                    = "github-proxy"
       image                   = "${local.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sourcegraph-github-proxy:3.41.0"
-      cpu                     = 1024 # 1 CPUs
-      memory                  = 1024 # 1 GiB
+      cpu                     = var.github_proxy_cpu
+      memory                  = var.github_proxy_mem
       essential               = true
       portMappings = [
         {

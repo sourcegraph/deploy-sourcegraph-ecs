@@ -57,8 +57,8 @@ resource "aws_ecs_task_definition" "indexed_search" {
 
       # zoekt-indexserver is CPU bound. The more CPU you allocate to it, the
       # lower lag between a new commit and it being indexed for search.
-      cpu       = 6144 # 6 CPUs
-      memory    = 8192 # 8 GiB
+      cpu       = var.search_indexer_cpu
+      memory    = var.search_indexer_mem
       essential = true
       portMappings = [
         {
@@ -98,8 +98,8 @@ resource "aws_ecs_task_definition" "indexed_search" {
       requiresCompatibilities = "EC2"
       name                    = "indexed-searcher"
       image                   = "${local.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sourcegraph-indexed-searcher:3.41.0"
-      cpu                     = 2048 # 2 CPUs
-      memory                  = 4092 # 4 GiB
+      cpu                     = var.indexed_searcher_cpu
+      memory                  = var.indexed_searcher_mem
       essential               = true
       portMappings = [
         {

@@ -5,8 +5,8 @@ resource "aws_ecs_task_definition" "syntax_highlighter" {
       requiresCompatibilities = "EC2"
       name                    = "syntax-highlighter"
       image                   = "${local.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sourcegraph-syntax-highlighter:3.41.0"
-      cpu                     = 4096 # 4 CPUs
-      memory                  = 6144 # 6 GiB
+      cpu                     = var.syntax_highlighter_cpu
+      memory                  = var.syntax_highlighter_mem
       essential               = true
       portMappings = [
         {

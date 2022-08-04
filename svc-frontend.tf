@@ -5,8 +5,8 @@ resource "aws_ecs_task_definition" "frontend" {
       requiresCompatibilities = "EC2"
       name                    = "frontend"
       image                   = "${local.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sourcegraph-frontend:3.41.0"
-      cpu                     = 4096 # 4 CPUs
-      memory                  = 8192 # 8 GiB
+      cpu                     = var.frontend_cpu
+      memory                  = var.frontend_mem
       essential               = true
       portMappings = [
         {
