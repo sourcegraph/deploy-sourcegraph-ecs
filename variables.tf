@@ -50,6 +50,16 @@ variable "indexed_search_instances" {
   type        = number
   default     = 3
 }
+variable "postgres_instance_type" {
+  description = "RDS DB instance type to use for Postgres"
+  type        = string
+  default     = "db.m5.large"
+}
+variable "redis_instance_type" {
+  description = "ElastiCache instance type to use for Rediss"
+  type        = string
+  default     = "cache.m4.large"
+}
 
 
 # Optional configuration
