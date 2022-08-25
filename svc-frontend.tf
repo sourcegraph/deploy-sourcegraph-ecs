@@ -34,23 +34,23 @@ resource "aws_ecs_task_definition" "frontend" {
         { name = "DEPLOY_TYPE", value = "pure-docker" },
         { name = "REDIS_CACHE_ENDPOINT", value = "${aws_elasticache_cluster.redis_cache.cache_nodes[0].address}:${aws_elasticache_cluster.redis_cache.cache_nodes[0].port}" },
         { name = "REDIS_STORE_ENDPOINT", value = "${aws_elasticache_cluster.redis_store.cache_nodes[0].address}:${aws_elasticache_cluster.redis_store.cache_nodes[0].port}" },
+        { name = "PGDATASOURCE", value = "postgres://sourcegraph:sourcegraph@${aws_db_instance.pgsql.endpoint}/${aws_db_instance.pgsql.db_name}" },
+        { name = "CODEINTEL_PGDATASOURCE", value = "postgres://sourcegraph:sourcegraph@${aws_db_instance.codeintel.endpoint}/${aws_db_instance.codeintel.db_name}" },
+        { name = "CODEINSIGHTS_PGDATASOURCE", value = "postgres://sourcegraph:sourcegraph@${aws_db_instance.codeinsights.endpoint}/${aws_db_instance.codeinsights.db_name}" },
 
         # TODO: every vaue below here is wrong
-        { name = "JAEGER_AGENT_HOST", value = "localhost" },                                                          # TODO: this value is wrong
-        { name = "PGHOST", value = "pgsql" },                                                                         # TODO
-        { name = "CODEINTEL_PGHOST", value = "codeintel-db" },                                                        # TODO
-        { name = "CODEINSIGHTS_PGDATASOURCE", value = "postgres://postgres:password@codeinsights-db:5432/postgres" }, # TODO
-        { name = "SRC_SYNTECT_SERVER", value = "http://syntect-server:9238" },                                        # TODO
-        { name = "SRC_GIT_SERVERS", value = "gitserver-1:3178 gitserver-2:3178" },                                    # TODO
-        { name = "SEARCHER_URL", value = "searcher-1:3181 searcher-2:3181" },                                         # TODO
-        { name = "SYMBOLS_URL", value = "symbols-1:3184 symbols-2:3184" },                                            # TODO
-        { name = "INDEXED_SEARCH_SERVERS", value = "indexed-search-1:6070 indexed-search-2:6070" },                   # TODO
-        { name = "SRC_FRONTEND_INTERNAL", value = "sourcegraph-frontend-internal:3090" },                             # TODO
-        { name = "REPO_UPDATER_URL", value = "http://repo-updater:3182" },                                            # TODO
-        { name = "GRAFANA_SERVER_URL", value = "http://grafana:3370" },                                               # TODO
-        { name = "JAEGER_SERVER_URL", value = "http://jaeger:16686" },                                                # TODO
-        { name = "GITHUB_BASE_URL", value = "http://github-proxy:3180" },                                             # TODO
-        { name = "PROMETHEUS_URL", value = "http://prometheus:9090" },                                                # TODO
+        { name = "JAEGER_AGENT_HOST", value = "localhost" },                                        # TODO: this value is wrong
+        { name = "SRC_SYNTECT_SERVER", value = "http://syntect-server:9238" },                      # TODO
+        { name = "SRC_GIT_SERVERS", value = "gitserver-1:3178 gitserver-2:3178" },                  # TODO
+        { name = "SEARCHER_URL", value = "searcher-1:3181 searcher-2:3181" },                       # TODO
+        { name = "SYMBOLS_URL", value = "symbols-1:3184 symbols-2:3184" },                          # TODO
+        { name = "INDEXED_SEARCH_SERVERS", value = "indexed-search-1:6070 indexed-search-2:6070" }, # TODO
+        { name = "SRC_FRONTEND_INTERNAL", value = "sourcegraph-frontend-internal:3090" },           # TODO
+        { name = "REPO_UPDATER_URL", value = "http://repo-updater:3182" },                          # TODO
+        { name = "GRAFANA_SERVER_URL", value = "http://grafana:3370" },                             # TODO
+        { name = "JAEGER_SERVER_URL", value = "http://jaeger:16686" },                              # TODO
+        { name = "GITHUB_BASE_URL", value = "http://github-proxy:3180" },                           # TODO
+        { name = "PROMETHEUS_URL", value = "http://prometheus:9090" },                              # TODO
       ]
       logConfiguration = {
         logDriver     = "awslogs"
