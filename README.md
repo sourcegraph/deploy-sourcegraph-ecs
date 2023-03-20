@@ -4,6 +4,10 @@ We suggest you deploy Sourcegraph using [Amazon EKS and Helm](https://docs.sourc
 
 This repository is a work-in-progress, and intended to be a reference for deploying Sourcegraph on the ECS container platform.
 
+## Warning: Incomplete!
+
+This repository is very incomplete and we have not been able to successfully deploy Sourcegraph on ECS/Fargate on our side yet; we strongly advise deploying Sourcegraph using a different method.
+
 # Deploy Sourcegraph using Amazon ECS
 
 This deploys Sourcegraph on [Amazon ECS (using EC2 launch types)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/application_architecture.html). We provide:
